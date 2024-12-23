@@ -1,0 +1,190 @@
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Каталог фильмов</title>
+        <style>
+            body {
+                font-family: sans-serif
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                cursor: pointer;
+                background-color: #f4f4f4;
+            }
+            img {
+                width: 100px;
+                height: auto;
+            }
+            .filters {
+                margin: 20px 0;
+                display: flex;
+                gap: 20px;
+                align-items: center;
+            }
+            .filter-group {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            select, input {
+                padding: 5px;
+                border-radius: 4px;
+                border: 1px solid #ddd;
+            }
+            .rating-high {
+                color: #28b328;
+                font-weight: bold;
+            }
+            .rating-good {
+                font-weight: bold;
+                color: #85c151;
+            }
+            .rating-medium {
+                font-weight: bold;
+                color: #ffd600;
+            }
+            .rating-low {
+                font-weight: bold;
+                color: #FF0000;
+            }
+        </style>
+        <script>
+            function sortTable(columnIndex) {
+                const table = document.getElementById("movieTable");
+                const rows = Array.from(table.rows).slice(1);
+                const isAsc = table.getAttribute("data-sort-order") === "asc";
+                rows.sort((a, b) => {
+                    const aText = a.cells[columnIndex].innerText;
+                    const bText = b.cells[columnIndex].innerText;
+                    return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                });
+                table.tBodies[0].append(...rows);
+                table.setAttribute("data-sort-order", isAsc ? "desc" : "asc");
+            }
+
+            function filterTable() {
+                const genreSelect = document.getElementById("genreFilter").value;
+                const yearSelect = document.getElementById("yearFilter").value;
+                const nameInput = document.getElementById("nameFilter").value.toLowerCase();
+                const rows = document.querySelectorAll("#movieTable tbody tr");
+
+                rows.forEach(row => {
+                    const genres = row.cells[3].innerText.split(',').map(g => g.trim());
+                    const year = row.cells[1].innerText;
+                    const name = row.cells[0].innerText.toLowerCase();
+
+                    const genreMatch = !genreSelect || genres.includes(genreSelect);
+                    const yearMatch = !yearSelect || year === yearSelect;
+                    const nameMatch = !nameInput || name.includes(nameInput);
+
+                    row.style.display = (genreMatch && yearMatch && nameMatch) ? "" : "none";
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Каталог фильмов</h1>
+        <div class="filters">
+            <div class="filter-group">
+                <label for="nameFilter">Поиск по названию:</label>
+                <input type="text" id="nameFilter" onkeyup="filterTable()">
+            </div>
+            <div class="filter-group">
+                <label for="yearFilter">Год:</label>
+                <select id="yearFilter" onchange="filterTable()">
+                    <option value="">Все годы</option>
+                        <option value="2009">2009</option>
+                    <option value="2016">2016</option>
+                    <option value="2019">2019</option>
+
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="genreFilter">Жанр:</label>
+                <select id="genreFilter" onchange="filterTable()">
+                    <option value="">Все жанры</option>
+                        <option value="боевик">боевик</option>
+                    <option value="детектив">детектив</option>
+                    <option value="драма">драма</option>
+                    <option value="комедия">комедия</option>
+                    <option value="криминал">криминал</option>
+                    <option value="мультфильм">мультфильм</option>
+                    <option value="приключения">приключения</option>
+                    <option value="семейный">семейный</option>
+                    <option value="триллер">триллер</option>
+                    <option value="фантастика">фантастика</option>
+
+                </select>
+            </div>
+        </div>
+        <table id="movieTable" data-sort-order="asc">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Название</th>
+                    <th onclick="sortTable(1)">Год</th>
+                    <th onclick="sortTable(2)">Описание</th>
+                    <th onclick="sortTable(3)">Жанр</th>
+                    <th onclick="sortTable(4)">Оценка</th>
+                    <th onclick="sortTable(5)">Продолжительность</th>
+                    <th>Постер</th>
+                </tr>
+            </thead>
+            <tbody>
+    
+                <tr>
+                    <td>Джентльмены</td>
+                    <td>2019</td>
+                    <td>Один ушлый американец ещё со студенческих лет приторговывал наркотиками, а теперь придумал схему нелегального обогащения с использованием поместий обедневшей английской аристократии и очень неплохо на этом разбогател. Другой пронырливый журналист приходит к Рэю, правой руке американца, и предлагает тому купить киносценарий, в котором подробно описаны преступления его босса при участии других представителей лондонского криминального мира — партнёра-еврея, китайской диаспоры, чернокожих спортсменов и даже русского олигарха.</td>
+                    <td>криминал, комедия, боевик</td>
+                    <td class="rating-high">8.62</td>
+                    <td>1ч 53м</td>
+                    <td><img src=".posters/Джентельмены.jpeg" alt="Постер фильма"></td>
+                </tr>
+        
+                <tr>
+                    <td>Иллюзия обмана 2</td>
+                    <td>2016</td>
+                    <td>«Четыре всадника», команда лучших иллюзионистов мира, снова в сборе! Их «магия» стала еще совершеннее, а враги – опаснее. На сей раз им предстоит спасти свою репутацию и вывести на чистую воду жестокого техномагната…</td>
+                    <td>боевик, триллер, комедия, криминал, детектив, приключения</td>
+                    <td class="rating-medium">6.74</td>
+                    <td>2ч 9м</td>
+                    <td><img src=".posters/Иллюзия обмана 2.jpeg" alt="Постер фильма"></td>
+                </tr>
+        
+                <tr>
+                    <td>Аватар</td>
+                    <td>2009</td>
+                    <td>Бывший морпех Джейк Салли прикован к инвалидному креслу. Несмотря на немощное тело, Джейк в душе по-прежнему остается воином. Он получает задание совершить путешествие в несколько световых лет к базе землян на планете Пандора, где корпорации добывают редкий минерал, имеющий огромное значение для выхода Земли из энергетического кризиса.</td>
+                    <td>фантастика, боевик, драма, приключения</td>
+                    <td class="rating-good">7.98</td>
+                    <td>2ч 42м</td>
+                    <td><img src=".posters/Аватар.jpeg" alt="Постер фильма"></td>
+                </tr>
+        
+                <tr>
+                    <td>Взломать блогеров</td>
+                    <td>2016</td>
+                    <td>Звездные блогеры рунета: Саша Спилберг, Ивангай и Марьяна Ро были «взломаны» неизвестным вирусом и перенеслись на  «рабочие столы» своих компьютеров в виде анимационных героев. Под угрозой отношения Вани и Марьяны, карьера Саши и аккаунты миллионов их фанатов. Кто вторгся в их аккаунты и завладел всеми данными? Как вернуться в привычную онлайн-жизнь? Пошел обратный отсчет –  ребята должны вырваться из цифровой ловушки.</td>
+                    <td>комедия, мультфильм, фантастика, семейный</td>
+                    <td class="rating-low">1.04</td>
+                    <td>1ч 9м</td>
+                    <td><img src=".posters/Взломать блогеров.jpeg" alt="Постер фильма"></td>
+                </tr>
+        
+            </tbody>
+        </table>
+    </body>
+    </html>
+    
