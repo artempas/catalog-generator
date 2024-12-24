@@ -90,7 +90,7 @@ def download_poster(poster_url, movie_name):
     return None
 
 
-def save_catalog_html(catalog, output_file, total_duration):
+def save_catalog_html(catalog, output_file, total_duration, min_year, max_year):
     """Сохраняет каталог фильмов в формате HTML с фильтрацией и сортировкой."""
     # Собираем уникальные годы, жанры и страны для селекторов
     years = sorted(set(movie['Год'] for movie in catalog if movie['Год'] != 'Неизвестно'))
@@ -223,8 +223,8 @@ def save_catalog_html(catalog, output_file, total_duration):
                 }
 
                 rows.sort((a, b) => {
-                    let aint = parseInt(a.cells[columnIndex].innerText);
-                    let bint = parseInt(b.cells[columnIndex].innerText);
+                    let aint = parseFloat(a.cells[columnIndex].innerText);
+                    let bint = parseFloat(b.cells[columnIndex].innerText);
                     if (isNaN(aint) || isNaN(bint)) {
                         const aText = a.cells[columnIndex].innerText;
                         const bText = b.cells[columnIndex].innerText;
@@ -281,10 +281,10 @@ def save_catalog_html(catalog, output_file, total_duration):
             </div>
             <div class="filter-group">
                 <label for="yearAfter">Год:</label>
-                <input style="width: 75px" type="number" id="yearAfter" onchange="filterTable()">
+                """+f'<input style="width: 75px" type="number" id="yearAfter" onchange="filterTable()" value={min_year}>'+"""
 
                 <label for="yearBefore">-</label>
-                <input style="width: 75px" type="number" id="yearBefore" onchange="filterTable()">
+                """+f'<input style="width: 75px" type="number" id="yearBefore" onchange="filterTable()" value={max_year}>'+"""
             </div>
             <div class="filter-group">
                 <label for="genreFilter">Жанр:</label>
@@ -394,6 +394,8 @@ def main():
 
     catalog = []
     total_duration = 0
+    min_year=3000
+    max_year=0
     for movie_name in video_files:
         print(f"Ищем информацию о фильме: {movie_name}")
         movie_info = search_movie(api_url, api_token, movie_name)
@@ -404,6 +406,8 @@ def main():
             total_duration += duration
             duration = duration if duration else 'Нет данных'
             countries = ', '.join(i['name'] for i in movie_info.get('countries', []))
+            min_year = min(movie_info.get('year', 3000), min_year)
+            max_year = max(movie_info.get('year', 0), max_year)
             url = f'https://www.kinopoisk.ru/film/{movie_info.get("id")}/'
             catalog.append({
                 'Название': movie_info.get('name', 'Неизвестно'),
@@ -419,7 +423,7 @@ def main():
         else:
             print(f"Информация о фильме {movie_name} не найдена.")
 
-    save_catalog_html(catalog, os.path.join(BASE_PATH, output_file), total_duration)
+    save_catalog_html(catalog, os.path.join(BASE_PATH, output_file), total_duration, min_year, max_year)
     with open('dump.json', 'w') as dump:
         json.dump(DUMP_JSON, dump)
     
