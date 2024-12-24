@@ -1,3 +1,4 @@
 .posters/
 .env
 *.html
+dump.json
